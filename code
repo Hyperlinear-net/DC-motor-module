@@ -1,0 +1,131 @@
+#include <DRV8835MotorShield.h>
+#include <AccelStepper.h>
+
+#define STEPPER_STEPS 1200
+#define STEPPER_STEPS_PER_REVOLUTION 200
+
+const int VR1A = 26;
+const int VR1B = 27;
+const int VR1C = 28;
+const int VR1D = 29;
+
+const int dcStepperToggle1Pin = 0;
+const int dcStepperToggle2Pin = 1;
+
+
+DRV8835MotorShield motors(2, 3, 4, 5);
+DRV8835MotorShield motors2(6, 7, 8, 9);
+//AccelStepper stepperAcc(AccelStepper::FULL4WIRE, 2, 3, 4, 5);
+
+const int LED_1 = 19;
+
+const float motorDamp = 1.0f;  // dampening motor volt //NOTE January 28th: changed damping from 0.3f to 1.0f
+const int deadZone = 2;       // between -deadZone and +deadZone -> no motor movement //NOTE January 28th: chnged dead zone from 25 to 1
+
+const int dcSpeed = 512;
+
+void setup() {
+  pinMode(dcStepperToggle1Pin, INPUT);
+  pinMode(VR1A, INPUT);
+  pinMode(VR1B, INPUT);
+  pinMode(VR1C, INPUT);
+  pinMode(VR1D, INPUT);
+  pinMode(LED_1, OUTPUT);
+}
+
+
+void control_m1(int pin) {
+  bool toggle = digitalRead(dcStepperToggle1Pin);
+
+  int poti = analogRead(pin);
+
+  if (toggle) {
+    // 0= stepper, 1=dc motor
+
+   // int motor_value = map(poti, 0, 1023, -dcSpeed, dcSpeed);
+   int motor_value = map(poti, 0, 1023, -2*dcSpeed, 2*dcSpeed); // Double the speed range for one direction TEST (return to ebove setting)
+
+    if (abs(motor_value) > deadZone) {
+      motors.setM1Speed(motor_value * motorDamp);
+    } else {
+      motors.setM1Speed(0);
+    }
+  } else {
+    //motors.setM1Speed(0);
+  }
+}
+
+
+void control_m2(int pin) {
+  bool toggle = digitalRead(dcStepperToggle1Pin);
+
+  int poti = analogRead(pin);
+
+  if (toggle) {
+    // 0= stepper, 1=dc motor
+
+    int motor_value = map(poti, 0, 1023, -dcSpeed, dcSpeed);
+
+    if (abs(motor_value) > deadZone) {
+      motors.setM2Speed(motor_value * motorDamp);
+    } else {
+      motors.setM2Speed(0);
+    }
+  } else {
+    //motors.setM1Speed(0);
+  }
+}
+
+void control_m3(int pin) {
+  bool toggle = digitalRead(dcStepperToggle1Pin);
+
+  int poti = analogRead(pin);
+
+  if (toggle) {
+    // 0= stepper, 1=dc motor
+
+    int motor_value = map(poti, 0, 1023, -dcSpeed, dcSpeed);
+
+    if (abs(motor_value) > deadZone) {
+      motors2.setM1Speed(motor_value * motorDamp);
+    } else {
+      motors2.setM1Speed(0);
+    }
+  } else {
+    //motors.setM1Speed(0);
+  }
+}
+
+
+void control_m4(int pin) {
+  bool toggle = digitalRead(dcStepperToggle1Pin);
+
+  int poti = analogRead(pin);
+
+  if (toggle) {
+    // 0= stepper, 1=dc motor
+
+    int motor_value = map(poti, 0, 1023, -dcSpeed, dcSpeed);
+
+    if (abs(motor_value) > deadZone) {
+      motors2.setM2Speed(motor_value * motorDamp);
+    } else {
+      motors2.setM2Speed(0);
+    }
+  } else {
+    //motors.setM1Speed(0);
+  }
+}
+
+void loop() {
+
+  //digitalWrite(LED_1, HIGH);
+
+
+  control_m1(VR1A);
+  control_m2(VR1B);
+  control_m3(VR1C);
+  control_m4(VR1D);
+
+  delay(20);
+}
